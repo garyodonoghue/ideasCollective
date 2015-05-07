@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Include meta tag to ensure proper rendering and touch zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Include jQuery Mobile stylesheets -->
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <!-- Include the jQuery library -->
+  <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <!-- Include the jQuery Mobile library -->
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+
+<div data-role="page" id="pageone">
+    
+	<div data-role="header">
+    <h1>Post Comments or give feedback on other people's thoughts and suggestions</h1>
+    </div>
+  
+  
+	</br>
+	</br>
+	<div id="comment-box" style="width:300px; padding-left:550px">
+		<textarea id="commentTxtBox" "rows="4" cols="10"></textarea>
+		<input id="postBtn" type="submit" value="Post Comment">
+    </div>
+	
+	</br>
+	
+	
+	<div id="newComment" style="width:300px; height:0px; padding-left:550px"></div>
+	<div id="main" style="width:300px; padding-left:550px"></div>
+	
+	<script>
+		$( document ).ready(function() {
+		  //call to get all comments on page load
+		  var url = 'http://localhost:8080/comments';
+		  var indexMappings = [];
+		  $.ajax(
+			{
+				type: "GET",
+				url: url,
+				data: "{}",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					var arr = $.map(data, function(el, i) 
+					{
+						indexMappings.push(i);
+						return el; 
+					})
+					
+					console.log(indexMappings);
+					var html = '</br></br></br>';
+					
+						for(var i=arr.length-1; i>=0;i--){
+							html += '<br><div id="'+indexMappings[i]+'"><b>';
+							html += arr[i].text;
+							html += '</b></br>';
+							
+							if(arr[i].responses != null){
+								for(var j = 0; j<arr[i].responses.length;j++){
+									html += '<li>' + arr[i].responses[j].responseText;
+									html += '</br>';
+								}
+							}
+							
+							html += '</br><textarea id="' + indexMappings[i] + 'RespTxt" "rows="1" cols="10"></textarea></br>';
+							html += '<input id="'+ indexMappings[i] +'" type="submit" value="Respond" onClick="submitResponse(event)">';
+							html += '</div></br><hr>';
+						}
+						
+					$("#main").html(html);
+				},
+				error: function (msg, url, line) {
+					alert('error');
+				}
+			});
+		});
+	</script>
+	
+	<script>
+		function submitResponse(event){
+			var commentDiv = "#"+event.target.id;
+			var respTxtDiv = "#"+event.target.id+"RespTxt";
+			var responseText = $(respTxtDiv).val();
+			
+			$(commentDiv).append("<div>"+responseText+"</div>");
+			console.log('commentId='+event.target.id);
+			
+			$(respTxtDiv).val('');
+		}
+	</script>
+	
+	<script>  
+		$( "#postBtn" ).bind( "click", function(event, ui) {
+			
+		  var url = 'http://localhost:8080/comment';
+		  var commentText = $('#commentTxtBox').val();
+		  commentText = commentText.replace(/\n/g, "");
+		  
+		  $.ajax(
+			{
+				type: "POST",
+				url: url,
+				data: '{"text" : "'+commentText+'", "userId" : 123}'	,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$("#newComment").prepend("<div><b>"+commentText+"</b></div></br><hr>")	
+					$("#commentTxtBox").val('');
+				},
+				error: function (msg, url, line) {
+					alert('error');
+				}
+			});
+		});	
+	</script>
+</body>
+</html>

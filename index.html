@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Include meta tag to ensure proper rendering and touch zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Include jQuery Mobile stylesheets -->
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <!-- Include the jQuery library -->
+  <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <!-- Include the jQuery Mobile library -->
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+
+<div data-role="page" id="pageone">
+  <div data-role="header">
+  <h1>Welcome To IdeasLog</h1>
+  </div>
+
+    <div class="ui-field-contain" id="usernameField">
+        <label for="username">Name:</label>
+        <input type="text" id="username">  
+	</div>
+	
+	<div class="ui-field-contain">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Your password..." id="pwdField">
+    </div>
+	  <input type="submit" id="submitBtn" value="Login" />
+  </div>
+
+	<script>  
+		$( "#submitBtn" ).bind( "click", function(event, ui) {
+		  
+		  var pwdVal = $('#password').val();
+		  var usernameVal = $('#username').val();
+		  var url = 'http://localhost:8080/login/'+usernameVal+'/'+pwdVal;
+		  alert(url);
+		  
+		  //make rest call to service to login method
+		  $.ajax(
+			{
+				type: "GET",
+				url: url,
+				data: "{}", //can look to putting in password here so it doesnt show in URL
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					//transition to 'posts' page
+					
+				},
+				error: function (msg, url, line) {
+					alert('error');
+				}
+			});
+		});	
+	</script>
+
+  <div data-role="footer">
+  <h1>Helping getting the youth more involved in politics</h1>
+  </div>
+</div> 
+
+</body>
+</html>
