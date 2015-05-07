@@ -35,8 +35,8 @@
 	<script>
 		$( document ).ready(function() {
 		  //call to get all comments on page load
-		  var url = 'http://localhost:8080/comments';
-		  var indexMappings = [];
+		  var url = 'https://glaring-torch-16.firebaseio.com/comments.json';
+		  var commentIndexMappings = [];
 		  $.ajax(
 			{
 				type: "GET",
@@ -45,29 +45,42 @@
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
 				success: function (data) {
-					var arr = $.map(data, function(el, i) 
+					var commentsArr = $.map(data, function(el, i) 
 					{
-						indexMappings.push(i);
+						commentIndexMappings.push(i);
 						return el; 
 					})
 					
-					console.log(indexMappings);
+					console.log(commentIndexMappings);
 					var html = '</br></br></br>';
 					
-						for(var i=arr.length-1; i>=0;i--){
-							html += '<br><div id="'+indexMappings[i]+'"><b>';
-							html += arr[i].text;
+						for(var i=commentsArr.length-1; i>=0;i--){
+							html += '<br><div id="'+commentIndexMappings[i]+'"><b>';
+							html += commentsArr[i].text;
 							html += '</b></br>';
 							
-							if(arr[i].responses != null){
-								for(var j = 0; j<arr[i].responses.length;j++){
-									html += '<li>' + arr[i].responses[j].responseText;
+							html += '</br><textarea id="' + commentIndexMappings[i] + 'RespTxt" "rows="1" cols="10"></textarea></br>';
+							html += '<input id="'+ commentIndexMappings[i] +'" type="submit" value="Respond" onClick="submitResponse(event)">';
+
+							html += '</br></br>';
+
+							if(commentsArr[i].responses != null){
+
+								var responsesIndexMappings = [];
+
+								var responsesArr = $.map(commentsArr[i].responses, function(el, i) 
+								{
+									responsesIndexMappings.push(i);
+									return el; 
+								})
+
+
+								for(var j = 0; j<responsesArr.length;j++){
+									html += '<li>' + responsesArr[j].text;
 									html += '</br>';
 								}
 							}
 							
-							html += '</br><textarea id="' + indexMappings[i] + 'RespTxt" "rows="1" cols="10"></textarea></br>';
-							html += '<input id="'+ indexMappings[i] +'" type="submit" value="Respond" onClick="submitResponse(event)">';
 							html += '</div></br><hr>';
 						}
 						
@@ -85,21 +98,37 @@
 			var commentDiv = "#"+event.target.id;
 			var respTxtDiv = "#"+event.target.id+"RespTxt";
 			var responseText = $(respTxtDiv).val();
+
+		    var url = 'https://glaring-torch-16.firebaseio.com/comments/'+event.target.id+'/responses.json';
 			
-			$(commentDiv).append("<div>"+responseText+"</div>");
-			console.log('commentId='+event.target.id);
+			$.ajax(
+			{
+				type: "POST",
+				url: url,
+				data: '{"text" : "'+responseText+'", "userId" : 123}'	,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$(commentDiv).append("<div>"+responseText+"</div>");
+					console.log('commentId='+event.target.id);
 			
-			$(respTxtDiv).val('');
+					$(respTxtDiv).val('');
+				},
+				error: function (msg, url, line) {
+					alert('error');
+				}
+			});
 		}
 	</script>
 	
 	<script>  
 		$( "#postBtn" ).bind( "click", function(event, ui) {
 			
-		  var url = 'http://localhost:8080/comment';
+		  var url = 'https://glaring-torch-16.firebaseio.com/comments.json';
 		  var commentText = $('#commentTxtBox').val();
 		  commentText = commentText.replace(/\n/g, "");
 		  
+		  //Passing fake user id at the moment - need to pass real value
 		  $.ajax(
 			{
 				type: "POST",
@@ -108,7 +137,7 @@
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
 				success: function (data) {
-					$("#newComment").prepend("<div><b>"+commentText+"</b></div></br><hr>")	
+					$("#main").prepend("<div><b>"+commentText+"</b></div></br><hr>")	
 					$("#commentTxtBox").val('');
 				},
 				error: function (msg, url, line) {
