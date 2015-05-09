@@ -9,29 +9,36 @@
   <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
   <!-- Include the jQuery Mobile library -->
   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
 
-<div data-role="page" id="pageone">
+
     
 	<div data-role="header">
-    <h1>Post Comments or give feedback on other people's thoughts and suggestions</h1>
+    	<h1>Post Comments and give feedback to others</h1>
     </div>
   
   
 	</br>
 	</br>
-	<div id="comment-box" style="width:300px; padding-left:550px">
-		<textarea id="commentTxtBox" "rows="4" cols="10"></textarea>
+
+	<div class="container">
+
+	<div id="comment-box">
+		<textarea id="commentTxtBox" "rows="4" cols="10" placeholder="Say something..."></textarea>
 		<input id="postBtn" type="submit" value="Post Comment">
     </div>
 	
 	</br>
 	
+	<div class="container" id="main">
 	
-	<div id="newComment" style="width:300px; height:0px; padding-left:550px"></div>
-	<div id="main" style="width:300px; padding-left:550px"></div>
-	
+	</div>
 	<script>
 		$( document ).ready(function() {
 		  //call to get all comments on page load
@@ -55,12 +62,12 @@
 					var html = '</br></br></br>';
 					
 						for(var i=commentsArr.length-1; i>=0;i--){
-							html += '<br><div id="'+commentIndexMappings[i]+'"><b>';
+							html += '<br><div id="'+commentIndexMappings[i]+'" class="container"><b>';
 							html += commentsArr[i].text;
-							html += '</b></br>';
+							html += '</b></br></br>';
 							
-							html += '</br><textarea id="' + commentIndexMappings[i] + 'RespTxt" "rows="1" cols="10"></textarea></br>';
-							html += '<input id="'+ commentIndexMappings[i] +'" type="submit" value="Respond" onClick="submitResponse(event)">';
+							html += '<textarea placeholder="respond to comment..." class="form-group" id="' + commentIndexMappings[i] + 'RespTxt" "rows="1" cols="100"></textarea></br>';
+							html += '<input class="form-group" id="'+ commentIndexMappings[i] +'" type="submit" value="Respond" onClick="submitResponse(event)">';
 
 							html += '</br></br>';
 
@@ -81,7 +88,7 @@
 								}
 							}
 							
-							html += '</div></br><hr>';
+							html += '</div></form></br><hr>';
 						}
 						
 					$("#main").html(html);
